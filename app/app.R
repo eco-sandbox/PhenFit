@@ -213,7 +213,7 @@ tab_background <- withMathJax(div(
     "A plant one width away from the optimum (\\(z = \\theta \\pm \\omega\\)) keeps 61% of \\(W_{max}\\).",
     "At half a width it keeps 88%, at two widths 14%, and at three widths only 1% (Via and Lande 1985; Lande 2009)."),
   fig_block("fig_gaussian.png", "Gaussian fitness function",
-            "Gaussian fitness function. Points mark fitness at 0.5, 1, 2 and 3 widths from the optimum. (c) PhenFit"),
+            "Gaussian fitness function. Points mark fitness at 0.5, 1, 2 and 3 widths from the optimum. ©PhenFit"),
 
   h3("Reaction norms"),
   p("A reaction norm describes how a genotype's phenotype changes with its environment.",
@@ -229,7 +229,7 @@ tab_background <- withMathJax(div(
   p("A perfect cue (\\(\\rho = 1\\)) favours tracking the full distance between the optima.",
     "A cue at chance level (\\(\\rho = 0.5\\)) favours no plasticity at all (Tufto 2000; Chevin and Lande 2015)."),
   fig_block("fig_cue_regression.png", "Cost-free regression slope \\(\\beta\\) for different cue reliabilities",
-            "Cost-free regression slope \\(\\beta\\) for cue reliabilities \u03c1 = 1, 0.9, 0.7 and 0.5. Bubble area shows probability. (c) PhenFit"),
+            "Cost-free regression slope \\(\\beta\\) for cue reliabilities \u03c1 = 1, 0.9, 0.7 and 0.5. Bubble area shows probability. ©PhenFit"),
 
   h3("Costs and limits of plasticity"),
   p("Being plastic can cost fitness, for example to maintain sensing and regulation.",
@@ -241,7 +241,7 @@ tab_background <- withMathJax(div(
     "Hard selection therefore pulls adaptation toward the nice environment, which is the source-sink logic",
     "(Holt and Gaines 1992; Kawecki 1995; Van Tienderen 1991)."),
   fig_block("Fig_hard_vs_soft_pool.png", "Hard and soft selection",
-            "Hard selection: patches contribute offspring by productivity. Soft selection: each patch contributes a fixed share. (c) PhenFit"),
+            "Hard selection: patches contribute offspring by productivity. Soft selection: each patch contributes a fixed share. ©PhenFit"),
 
   h3("References"),
   div(class = "refs", lapply(background_refs, ref_par))
@@ -286,7 +286,7 @@ tab_howitworks <- withMathJax(div(
   fig_block("fig_landscape_arrows_plain.png", "Fitness landscape in the harsh and the nice environment",
             HTML(paste("Fitness landscape for the baseline case: Gaussian fitness in the harsh (dashed, maximum 0.4)",
                        "and the nice environment (solid, maximum 1), \u0394 = 2, \u03c9 = 1.",
-                       "Circles: best canalized genotype; triangles: evolved plastic genotype (z = a when the cue says harsh). (c) PhenFit"))),
+                       "Circles: best canalized genotype; triangles: evolved plastic genotype (z = a when the cue says harsh). ©PhenFit"))),
   h3("Mean fitness"),
   p("$$\\bar{W} = \\sum_e w_e W_e$$"),
   p("Under hard selection, \\(w_e\\) is the environment's frequency \u00d7 its \\(W_{max}\\).",
