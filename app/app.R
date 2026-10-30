@@ -1,15 +1,15 @@
-# app.R -- Shiny app for the plasticity model (illustrative, not a published result)
+# app.R -- Shiny app for PhenFit
 # Run with: shiny::runApp()   (from this folder)
 library(shiny)
 library(ggplot2)
 source("model.R", local = TRUE)   # model + other plots; needs model.R in the same folder
 
-# Fitness-vs-slope plot, defined here (v2, 2026-10-27) so that this app.R fixes the
+# Fitness-vs-slope plot
 # clipped b* label even next to an older model.R: it overrides gg_slope_profile().
 gg_slope_profile <- function(m) {
   stopifnot(requireNamespace("ggplot2", quietly = TRUE))
   d <- data.frame(b = m$b_grid, fitness = m$profile)
-  # Robust b* label (v2): explicit y-range with 40% headroom above the peak, and
+  # Robust b* label: explicit y-range with 40% headroom above the peak, and
   # the label pinned just inside the top edge of the panel (y = Inf, vjust > 1),
   # so it can never be clipped, whatever the plot height. No clip = "off".
   yr <- range(m$profile); span <- max(diff(yr), 1e-4)
@@ -39,7 +39,6 @@ gg_slope_profile <- function(m) {
 lab2 <- function(main, sub) HTML(paste0(main,
   "<br><span style='font-weight:normal; font-size:12px; color:#666;'>", sub, "</span>"))
 
-# Pre-defined example cases (Table 2 of the review), v3 2026-10-28; case 8 added v6 2026-10-29.
 # Every case sets both selection widths (om_n, om_h); notes may contain HTML (<sub>).
 cases <- list(
   "1" = list(name = "Baseline",        p_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
@@ -63,7 +62,6 @@ cases <- list(
   "7" = list(name = "Distant optima",  p_nice = 0.7, ratio = 0.4, delta = 2.5, rho = 0.9, cost = 0.05, regime = "hard",
              om_n = 1, om_h = 1,
              note = "Optimum difference 2.5: fitness vs. slope has two peaks, a near-canalized nice specialist (b \u2248 0.1) and the plastic optimum (b* \u2248 0.82); intermediate slopes do worse than both."),
-  # v6 (2026-10-29): the only case that changes a width (om_n = 0.5); all else baseline
   "8" = list(name = "Unequal widths",  p_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
              om_n = 0.5, om_h = 1,
              note = "Narrow nice niche (\u03c9<sub>nice</sub> = 0.5): fitness vs. slope has two peaks, but here the near-canalized nice specialist wins (b* \u2248 0.06); the plastic peak (b \u2248 0.83) is lower. The reverse of case 7.")
@@ -118,7 +116,7 @@ model_terms <- list(
   c("Evolved genotype (\\(a^*, b^*\\))", "the genotype with the highest mean fitness across both environments, found by grid search"),
   c("Harsh/nice maximum-fitness ratio (\\(r\\))", "maximum attainable fitness in the harsh environment relative to the nice one (0–1), matters only under hard selection"),
   c("Distance between optima (\\(\\Delta\\))", "the difference between the optimal trait values in the nice and the harsh environment, in units of the selection width"),
-  c("Selection width (\\(\\omega\\))", "the width of the Gaussian fitness curve; at \\(\\theta \\pm \\omega\\) fitness is 61% of its maximum"),
+  c("Selection width (\\(\\omega\\))", "the width of the Gaussian fitness curve, at \\(\\theta \\pm \\omega\\) fitness is 61% of its maximum"),
   c("Maximum fitness (\\(W_{max}\\))", "the highest fitness an environment allows: 1 in the nice environment and \\(r\\) in the harsh one"),
   c("Frequency of nice (\\(p\\))", "the probability that a generation meets the nice environment"),
   c("Cue (\\(s\\))", "the environmental signal a plant senses before selection acts: \\(s = 1\\) if it says nice, \\(s = 0\\) if it says harsh"),
@@ -215,7 +213,7 @@ tab_background <- withMathJax(div(
     "A plant one width away from the optimum (\\(z = \\theta \\pm \\omega\\)) keeps 61% of \\(W_{max}\\).",
     "At half a width it keeps 88%, at two widths 14%, and at three widths only 1% (Via and Lande 1985; Lande 2009)."),
   fig_block("fig_gaussian.png", "Gaussian fitness function",
-            "Gaussian fitness function. Points mark fitness at 0.5, 1, 2 and 3 widths from the optimum."),
+            "Gaussian fitness function. Points mark fitness at 0.5, 1, 2 and 3 widths from the optimum. (c) PhenFit"),
 
   h3("Reaction norms"),
   p("A reaction norm describes how a genotype's phenotype changes with its environment.",
@@ -231,7 +229,7 @@ tab_background <- withMathJax(div(
   p("A perfect cue (\\(\\rho = 1\\)) favours tracking the full distance between the optima.",
     "A cue at chance level (\\(\\rho = 0.5\\)) favours no plasticity at all (Tufto 2000; Chevin and Lande 2015)."),
   fig_block("fig_cue_regression.png", "Cost-free regression slope \\(\\beta\\) for different cue reliabilities",
-            "Cost-free regression slope \\(\\beta\\) for cue reliabilities \u03c1 = 1, 0.9, 0.7 and 0.5. Bubble area shows probability."),
+            "Cost-free regression slope \\(\\beta\\) for cue reliabilities \u03c1 = 1, 0.9, 0.7 and 0.5. Bubble area shows probability. (c) PhenFit"),
 
   h3("Costs and limits of plasticity"),
   p("Being plastic can cost fitness, for example to maintain sensing and regulation.",
@@ -243,7 +241,7 @@ tab_background <- withMathJax(div(
     "Hard selection therefore pulls adaptation toward the nice environment, which is the source-sink logic",
     "(Holt and Gaines 1992; Kawecki 1995; Van Tienderen 1991)."),
   fig_block("Fig_hard_vs_soft_pool.png", "Hard and soft selection",
-            "Hard selection: patches contribute offspring by productivity. Soft selection: each patch contributes a fixed share."),
+            "Hard selection: patches contribute offspring by productivity. Soft selection: each patch contributes a fixed share. (c) PhenFit"),
 
   h3("References"),
   div(class = "refs", lapply(background_refs, ref_par))
@@ -288,7 +286,7 @@ tab_howitworks <- withMathJax(div(
   fig_block("fig_landscape_arrows_plain.png", "Fitness landscape in the harsh and the nice environment",
             HTML(paste("Fitness landscape for the baseline case: Gaussian fitness in the harsh (dashed, maximum 0.4)",
                        "and the nice environment (solid, maximum 1), \u0394 = 2, \u03c9 = 1.",
-                       "Circles: best canalized genotype; triangles: evolved plastic genotype (z = a when the cue says harsh)."))),
+                       "Circles: best canalized genotype; triangles: evolved plastic genotype (z = a when the cue says harsh). (c) PhenFit"))),
   h3("Mean fitness"),
   p("$$\\bar{W} = \\sum_e w_e W_e$$"),
   p("Under hard selection, \\(w_e\\) is the environment's frequency \u00d7 its \\(W_{max}\\).",
@@ -326,14 +324,14 @@ tab_howitworks <- withMathJax(div(
     "It finds the optimal genotype but doesn't track how a population gets there."),
   
   h3("Attribution"),
-  p("PhenFit (v1.5 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
+  p("PhenFit (v1.6 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
   
 ))
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(phenfit_css)), tags$script(HTML(phenfit_js))),
   titlePanel("PhenFit: plasticity in a harsh vs. a nice environment"),
-  p("Simplified model of selection on plastic and canalized phenotypes (v1.5 / 10.2026)"),
+  p("Simplified model of selection on plastic and canalized phenotypes (v1.6 / 10.2026)"),
   tabsetPanel(
     id = "main_tabs",
     tabPanel(
