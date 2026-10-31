@@ -322,14 +322,14 @@ tab_howitworks <- withMathJax(div(
     "It finds the optimal genotype but doesn't track how a population gets there."),
   
   h3("Attribution"),
-  p("PhenFit (v1.7 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
+  p("PhenFit (v1.8 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
   
 ))
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(phenfit_css)), tags$script(HTML(phenfit_js))),
-  titlePanel("PhenFit: Phenotype finds fitness"),
-  p("Simplified model of selection on plastic and canalized genotypes in harsh vs. nice environments (v1.7 / 10.2026)"),
+  titlePanel("PhenFit: Finding the fittest genotype"),
+  p("Simplified model of selection on plastic and canalized genotypes in harsh vs. nice environments (v1.8 / 10.2026)"),
   tabsetPanel(
     id = "main_tabs",
     tabPanel(
