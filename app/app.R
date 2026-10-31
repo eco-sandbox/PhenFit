@@ -228,8 +228,8 @@ tab_background <- withMathJax(div(
   p("$$\\beta = \\frac{\\mathrm{cov}(\\theta, s)}{\\mathrm{var}(s)}$$"),
   p("A perfect cue (\\(\\rho = 1\\)) favours tracking the full distance between the optima.",
     "A cue at chance level (\\(\\rho = 0.5\\)) favours no plasticity at all (Tufto 2000; Chevin and Lande 2015)."),
-  fig_block("fig_cue_regression.png", "Cost-free regression slope \\(\\beta\\) for different cue reliabilities",
-            "Cost-free regression slope \\(\\beta\\) for cue reliabilities \u03c1 = 1, 0.9, 0.7 and 0.5. Bubble area shows probability. ©PhenFit"),
+  fig_block("anim_cue_regression.gif", "Cost-free regression slope \\(\\beta\\) for different cue reliabilities",
+            "Cost-free regression slope \\(\\beta\\) for different cue reliabilities \u03c1. Bubble area shows probability. ©PhenFit"),
 
   h3("Costs and limits of plasticity"),
   p("Being plastic can cost fitness, for example to maintain sensing and regulation.",
@@ -283,10 +283,8 @@ tab_howitworks <- withMathJax(div(
   p("This applies Gaussian selection separately in each environment and averages over both cue outcomes.",
     "The factor \\((1 - cb^2)\\) is the cost of plasticity. Because the cost rises with \\(b^2\\),",
     "a little plasticity is almost free, but strong plasticity becomes expensive."),
-  fig_block("fig_landscape_arrows_plain.png", "Fitness landscape in the harsh and the nice environment",
-            HTML(paste("Fitness landscape for the baseline case: Gaussian fitness in the harsh (dashed, maximum 0.4)",
-                       "and the nice environment (solid, maximum 1), \u0394 = 2, \u03c9 = 1.",
-                       "Circles: best canalized genotype; triangles: evolved plastic genotype (z = a when the cue says harsh). ©PhenFit"))),
+  fig_block("anim_b_sweep.gif", "Fitness landscape in the harsh and the nice environment",
+            HTML(paste("Mean fitness of the plastic genotype peaks at an intermediate slope (b* = 0.58), because plasticity pays in the harsh environment but costs fitness and misfires when the cue is wrong. ©PhenFit"))),
   h3("Mean fitness"),
   p("$$\\bar{W} = \\sum_e w_e W_e$$"),
   p("Under hard selection, \\(w_e\\) is the environment's frequency \u00d7 its \\(W_{max}\\).",
@@ -324,14 +322,14 @@ tab_howitworks <- withMathJax(div(
     "It finds the optimal genotype but doesn't track how a population gets there."),
   
   h3("Attribution"),
-  p("PhenFit (v1.6 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
+  p("PhenFit (v1.7 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
   
 ))
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(phenfit_css)), tags$script(HTML(phenfit_js))),
-  titlePanel("PhenFit: plasticity in a harsh vs. a nice environment"),
-  p("Simplified model of selection on plastic and canalized phenotypes (v1.6 / 10.2026)"),
+  titlePanel("PhenFit: Phenotype finds fitness"),
+  p("Simplified model of selection on plastic and canalized genotypes in harsh vs. nice environments (v1.7 / 10.2026)"),
   tabsetPanel(
     id = "main_tabs",
     tabPanel(
