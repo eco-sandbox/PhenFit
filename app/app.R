@@ -17,7 +17,7 @@ gg_slope_profile <- function(m) {
   right <- m$b_star > 0.6
   lab <- sprintf("b* = %.2f", m$b_star)
   ggplot2::ggplot(d, ggplot2::aes(b, fitness)) +
-    ggplot2::geom_line(colour = "#0072B2", linewidth = 1.4) +
+    ggplot2::geom_line(colour = "#3B528B", linewidth = 1.4) +   # viridis blue (plastic genotype)
     ggplot2::geom_vline(xintercept = m$b_star, linetype = "dashed", colour = "grey40") +
     ggplot2::geom_point(data = data.frame(b = m$b_star, fitness = max(m$profile)),
                         size = 3) +
@@ -41,28 +41,28 @@ lab2 <- function(main, sub) HTML(paste0(main,
 
 # Every case sets both selection widths (om_n, om_h); notes may contain HTML (<sub>).
 cases <- list(
-  "1" = list(name = "Baseline",        p_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
+  "1" = list(name = "Baseline",        f_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
              om_n = 1, om_h = 1,
              note = "Default settings: a moderate slope evolves; the benefit appears in the harsh environment."),
-  "2" = list(name = "Unreliable cue",  p_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.5, cost = 0.05, regime = "hard",
+  "2" = list(name = "Unreliable cue",  f_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.5, cost = 0.05, regime = "hard",
              om_n = 1, om_h = 1,
              note = "Cue reliability 0.5 (uninformative): the slope collapses to zero."),
-  "3" = list(name = "High cost",       p_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.5,  regime = "hard",
+  "3" = list(name = "High cost",       f_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.5,  regime = "hard",
              om_n = 1, om_h = 1,
              note = "Cost c = 0.5: a high cost pushes the population back to canalization."),
-  "4" = list(name = "Harsh common",    p_nice = 0.1, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
+  "4" = list(name = "Harsh common",    f_nice = 0.1, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
              om_n = 1, om_h = 1,
              note = "Nice environment rare (0.1): the benefit of plasticity moves to the nice environment."),
-  "5" = list(name = "Sink-like harsh", p_nice = 0.5, ratio = 0.2, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
+  "5" = list(name = "Sink-like harsh", f_nice = 0.5, ratio = 0.2, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
              om_n = 1, om_h = 1,
              note = "Harsh/nice fitness 0.2: trait means follow the nice optimum; the gain shows up in the harsh habitat."),
-  "6" = list(name = "Small \u0394",    p_nice = 0.7, ratio = 0.4, delta = 0.5, rho = 0.9, cost = 0.05, regime = "hard",
+  "6" = list(name = "Small \u0394",    f_nice = 0.7, ratio = 0.4, delta = 0.5, rho = 0.9, cost = 0.05, regime = "hard",
              om_n = 1, om_h = 1,
              note = "Optimum difference 0.5: little plasticity and almost no benefit, despite a large fitness difference."),
-  "7" = list(name = "Distant optima",  p_nice = 0.7, ratio = 0.4, delta = 2.5, rho = 0.9, cost = 0.05, regime = "hard",
+  "7" = list(name = "Distant optima",  f_nice = 0.7, ratio = 0.4, delta = 2.5, rho = 0.9, cost = 0.05, regime = "hard",
              om_n = 1, om_h = 1,
              note = "Optimum difference 2.5: fitness vs. slope has two peaks, a near-canalized nice specialist (b \u2248 0.1) and the plastic optimum (b* \u2248 0.82); intermediate slopes do worse than both."),
-  "8" = list(name = "Unequal widths",  p_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
+  "8" = list(name = "Unequal widths",  f_nice = 0.7, ratio = 0.4, delta = 2,   rho = 0.9, cost = 0.05, regime = "hard",
              om_n = 0.5, om_h = 1,
              note = "Narrow nice niche (\u03c9<sub>nice</sub> = 0.5): fitness vs. slope has two peaks, but here the near-canalized nice specialist wins (b* \u2248 0.06); the plastic peak (b \u2248 0.83) is lower. The reverse of case 7.")
 )
@@ -82,6 +82,9 @@ phenfit_css <- "
 .glossary td:last-child { width: 26%; color: #444; }
 .model-terms td:last-child { width: auto; color: inherit; }
 .refs p { margin: 0 0 8px 0; padding-left: 1.5em; text-indent: -1.5em; font-size: 14px; }
+/* sliders in viridis blue (#3B528B, the plastic-genotype color) instead of the default Bootstrap blue */
+.irs-bar, .irs-bar-edge, .irs-single, .irs-from, .irs-to { background: #3B528B !important; border-color: #3B528B !important; }
+.irs-single:before, .irs-from:before, .irs-to:before { border-top-color: #3B528B !important; }
 "
 
 # Re-typeset MathJax when a tab is shown (equations in hidden tabs can otherwise
@@ -118,7 +121,7 @@ model_terms <- list(
   c("Distance between optima (\\(\\Delta\\))", "the difference between the optimal trait values in the nice and the harsh environment, in units of the selection width"),
   c("Selection width (\\(\\omega\\))", "the width of the Gaussian fitness curve, at \\(\\theta \\pm \\omega\\) fitness is 61% of its maximum"),
   c("Maximum fitness (\\(W_{max}\\))", "the highest fitness an environment allows: 1 in the nice environment and \\(r\\) in the harsh one"),
-  c("Frequency of nice (\\(p\\))", "the probability that a generation meets the nice environment"),
+  c("Frequency of nice (\\(f\\))", "the probability that a generation meets the nice environment"),
   c("Cue (\\(s\\))", "the environmental signal a plant senses before selection acts: \\(s = 1\\) if it says nice, \\(s = 0\\) if it says harsh"),
   c("Cue reliability (\\(\\rho\\))", "the probability that the cue correctly indicates the environment"),
   c("Cost of plasticity (\\(c\\))", "scales the fitness cost of plasticity, which enters as \\((1 - c b^2)\\)"),
@@ -144,11 +147,11 @@ glossary <- list(
   c("Genetic tracking", "the evolution of the mean trait, through selection across generations. It works when autocorrelation is high: the parents' environment predicts the offspring's, so the population can adapt to it over time", "Tufto 2015; Botero et al. 2015"),
   c("Genotype-by-environment interaction (G\u00d7E)", "genetic variation in plasticity, meaning that genotypes differ in reaction-norm slope or shape", "Via and Lande 1985; Scheiner 1993"),
   c("Hard and soft selection", "under hard selection, each environment's contribution to the next generation scales with its productivity. Under soft selection, each contributes a fixed share regardless of productivity", "Van Tienderen 1991; de Jong 1995"),
-  c("Jack-of-all-trades / Master-of-some", "plastic genotypes that maintain fitness in unfavourable environments, versus ones that raise fitness in favourable environments", "Richards et al. 2006"),
+  c("Jack-of-all-trades / Master-of-some", "plastic genotypes that maintain fitness in unfavorable environments, versus ones that raise fitness in favorable environments", "Richards et al. 2006"),
   c("Passive plasticity", "phenotypic change that follows directly from the environment's effect on growth or physiology (e.g. smaller plants under nutrient shortage) rather than from a regulated, cue-driven response. It is often not adaptive.", "Van Kleunen and Fischer 2005; Forsman 2015"),
   c("Phenotypic plasticity", "the ability of one genotype to produce different phenotypes in response to different environments (in contrast to bet-hedging, where variation arises without an environmental cue)", "Johannsen 1911; Bradshaw 1965; Schlichting 1986; Pigliucci 2005"),
-  c("Reaction norm", "the set of phenotypes a genotype expresses across a range of environments, often summarised by its intercept and slope", "Woltereck 1909; Via and Lande 1985; Gomulkiewicz and Kirkpatrick 1992"),
-  c("Stabilizing selection", "selection favouring an intermediate optimum phenotype, with fitness falling off on both sides", "Lande and Arnold 1983; Via and Lande 1985")
+  c("Reaction norm", "the set of phenotypes a genotype expresses across a range of environments, often summarized by its intercept and slope", "Woltereck 1909; Via and Lande 1985; Gomulkiewicz and Kirkpatrick 1992"),
+  c("Stabilizing selection", "selection favoring an intermediate optimum phenotype, with fitness falling off on both sides", "Lande and Arnold 1983; Via and Lande 1985")
 )
 
 glossary_table <- tags$table(
@@ -226,8 +229,8 @@ tab_background <- withMathJax(div(
     "such as a low red to far-red ratio predicting shade. The cue reliability \\(\\rho\\) is the probability that the cue is right.",
     "Without any cost, and if fitness were quadratic, the best slope would be the cost-free regression slope \\(\\beta\\) of the optimal trait value on the cue:"),
   p("$$\\beta = \\frac{\\mathrm{cov}(\\theta, s)}{\\mathrm{var}(s)}$$"),
-  p("A perfect cue (\\(\\rho = 1\\)) favours tracking the full distance between the optima.",
-    "A cue at chance level (\\(\\rho = 0.5\\)) favours no plasticity at all (Tufto 2000; Chevin and Lande 2015)."),
+  p("A perfect cue (\\(\\rho = 1\\)) favors tracking the full distance between the optima.",
+    "A cue at chance level (\\(\\rho = 0.5\\)) favors no plasticity at all (Tufto 2000; Chevin and Lande 2015)."),
   fig_block("anim_cue_regression.gif", "Cost-free regression slope \\(\\beta\\) for different cue reliabilities",
             "Cost-free regression slope \\(\\beta\\) for different cue reliabilities \u03c1. Bubble area shows probability. ©PhenFit"),
 
@@ -250,11 +253,11 @@ tab_background <- withMathJax(div(
 # Preset-case lines: one per case button in `cases` above (checked by the stopifnot below).
 # Entries may contain HTML (<sub>); they are rendered with HTML().
 case_lines <- c(
-  "1" = "Baseline: the default settings (p = 0.7, r = 0.4, \u0394 = 2, \u03c1 = 0.9, c = 0.05, hard selection)",
+  "1" = "Baseline: the default settings (<i>f</i> = 0.7, r = 0.4, \u0394 = 2, \u03c1 = 0.9, c = 0.05, hard selection)",
   "2" = "Unreliable cue: \u03c1 = 0.5",
   "3" = "High cost: c = 0.5",
-  "4" = "Harsh common: p = 0.1",
-  "5" = "Sink-like harsh: p = 0.5, r = 0.2",
+  "4" = "Harsh common: <i>f</i> = 0.1",
+  "5" = "Sink-like harsh: <i>f</i> = 0.5, r = 0.2",
   "6" = "Small \u0394: \u0394 = 0.5",
   "7" = "Distant optima: \u0394 = 2.5 (fitness vs. slope has two peaks)",
   "8" = "Unequal widths: \u03c9<sub>nice</sub> = 0.5 (near-canalized peak wins over the plastic one)"
@@ -265,11 +268,11 @@ stopifnot(identical(names(case_lines), names(cases)),
 tab_howitworks <- withMathJax(div(
   class = "text-col",
   h3("What it does"),
-  p("PhenFit asks how much plasticity selection favours when a population lives in a mix of harsh and nice environments.",
+  p("PhenFit asks how much plasticity selection favors when a population lives in a mix of harsh and nice environments.",
     "It finds the evolved genotype \\((a^*, b^*)\\) and compares it with the best canalized genotype (\\(b = 0\\))."),
 
   h3("Environments"),
-  p("Each generation, a plant meets the nice environment with probability \\(p\\) and the harsh one with probability \\(1 - p\\).",
+  p("Each generation, a plant meets the nice environment with probability \\(f\\) and the harsh one with probability \\(1 - f\\).",
     "Each generation is drawn independently, so there is no temporal autocorrelation.",
     "The optimal trait value is 0 in the harsh environment and \\(\\Delta\\) in the nice one.",
     "\\(\\Delta\\) is measured in units of the selection width (\\(\\omega = 1\\))."),
@@ -296,7 +299,7 @@ tab_howitworks <- withMathJax(div(
 
   h3("Controls"),
   tags$ul(
-    tags$li("Frequency of the nice environment (\\(p\\)): 0.05\u20130.95 (default 0.7)"),
+    tags$li("Frequency of the nice environment (\\(f\\)): 0.05\u20130.95 (default 0.7)"),
     tags$li("Harsh/nice maximum-fitness ratio (r): 0.1\u20131 (default 0.4)"),
     tags$li("Distance between optima (\\(\\Delta\\)): 0.5\u20133 (default 2)"),
     tags$li("Cue reliability (\\(\\rho\\)): 0.5\u20131 (default 0.9)"),
@@ -322,14 +325,14 @@ tab_howitworks <- withMathJax(div(
     "It finds the optimal genotype but doesn't track how a population gets there."),
   
   h3("Attribution"),
-  p("PhenFit (v1.8 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
+  p("PhenFit (v1.9 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
   
 ))
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(phenfit_css)), tags$script(HTML(phenfit_js))),
   titlePanel("PhenFit: Finding the fittest genotype"),
-  p("Simplified model of selection on plastic and canalized genotypes in harsh vs. nice environments (v1.8 / 10.2026)"),
+  p("Simplified model of selection on plastic and canalized genotypes in harsh vs. nice environments (v1.9 / 10.2026)"),
   tabsetPanel(
     id = "main_tabs",
     tabPanel(
@@ -343,7 +346,7 @@ ui <- fluidPage(
                              class = "btn-sm", style = "margin: 2px;"))),
           helpText(uiOutput("case_note", inline = TRUE)),
           hr(),
-          sliderInput("p_nice", "Frequency of nice environment", 0.05, 0.95, 0.7, step = 0.05),
+          sliderInput("f_nice", HTML("Frequency of nice environment (<i>f</i>)"), 0.05, 0.95, 0.7, step = 0.05),
           sliderInput("ratio", "Harsh/nice maximum-fitness ratio (r)", 0.1, 1, 0.4, step = 0.1),
           sliderInput("delta", lab2("Optimum difference \u0394", "in units of width \u03c9 = 1"), 0.5, 3, 2, step = 0.5),
           sliderInput("rho", lab2("Cue reliability \u03c1", "0.5 = uninformative"), 0.5, 1, 0.9, step = 0.05),
@@ -375,7 +378,7 @@ server <- function(input, output, session) {
   lapply(names(cases), function(k) {
     observeEvent(input[[paste0("case_", k)]], {
       cs <- cases[[k]]
-      updateSliderInput(session, "p_nice", value = cs$p_nice)
+      updateSliderInput(session, "f_nice", value = cs$f_nice)
       updateSliderInput(session, "ratio",  value = cs$ratio)
       updateSliderInput(session, "delta",  value = cs$delta)
       updateSliderInput(session, "rho",    value = cs$rho)
@@ -387,7 +390,7 @@ server <- function(input, output, session) {
     })
   })
   output$case_note <- renderUI(HTML(case_note()))
-  m <- reactive(run_model(input$p_nice, input$ratio, input$delta,
+  m <- reactive(run_model(input$f_nice, input$ratio, input$delta,
                               input$rho, input$cost, input$regime,
                               om_h = input$om_h, om_n = input$om_n))
   output$rn <- renderPlot(gg_reaction_norms(m()))

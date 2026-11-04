@@ -17,11 +17,12 @@
 #  * Fitness of (a, b) in environment e:
 #        W_e = Wmax_e * (1 - cost * b^2) * E_cue[ exp(-(z - theta_e)^2 / (2 omega_e^2)) ]
 #    with E_cue over the sensed state (correct w.p. rho).
-#  * Selection picks the (a, b) maximising the weighted sum of the two
+#  * Selection picks the (a, b) maximizing the weighted sum of the two
 #    environments' fitness (grid search: a in [-1, delta + 1] step 0.005,
 #    b in [0, 1] step 0.01; first maximum wins). Weights:
-#      "hard": frequency x maximum fitness  (harsh: (1-p)*ratio, nice: p)
-#      "soft": frequency                    (harsh: 1-p,        nice: p)
+#      "hard": frequency x maximum fitness  (harsh: (1-f)*ratio, nice: f)
+#      "soft": frequency                    (harsh: 1-f,        nice: f)
+#    where f is the frequency of the nice environment (argument f_nice).
 #  * "Canalized genotype" = the best intercept with b = 0 (no cost).
 #  * "Plastic genotype"   = the evolved (a*, b*); it can never do worse than the
 #    canalized one on the selection objective, and equals it when b* = 0.
@@ -40,7 +41,7 @@ fitness_shape <- function(a, b, delta, rho, om_h = 1, om_n = 1) {
 }
 
 #' Evolved genotype by grid search over (a, b)
-#' @param p_nice frequency of the nice environment
+#' @param f_nice frequency f of the nice environment
 #' @param ratio  maximum fitness in harsh / nice environment
 #' @param delta  distance between optima (in selection widths)
 #' @param rho    cue reliability
@@ -48,11 +49,11 @@ fitness_shape <- function(a, b, delta, rho, om_h = 1, om_n = 1) {
 #' @param regime "hard" or "soft"
 #' @return list(a_star, b_star, z_star (canalized intercept, b = 0),
 #'         b_grid, profile (best objective for each b))
-solve_slope <- function(p_nice, ratio, delta, rho, cost, regime = c("hard", "soft"),
+solve_slope <- function(f_nice, ratio, delta, rho, cost, regime = c("hard", "soft"),
                         a_step = 0.005, b_step = 0.01, om_h = 1, om_n = 1) {
   regime <- match.arg(regime)
-  w_harsh <- if (regime == "hard") (1 - p_nice) * ratio else 1 - p_nice
-  w_nice  <- p_nice
+  w_harsh <- if (regime == "hard") (1 - f_nice) * ratio else 1 - f_nice
+  w_nice  <- f_nice
   a <- -1 + (0:round((delta + 2) / a_step)) * a_step
   b_grid <- (0:round(1 / b_step)) * b_step
   profile <- numeric(length(b_grid)); a_at <- numeric(length(b_grid))
@@ -69,12 +70,12 @@ solve_slope <- function(p_nice, ratio, delta, rho, cost, regime = c("hard", "sof
 }
 
 #' Best fixed (canalized) phenotype, kept for convenience (b = 0)
-canalized_optimum <- function(p_nice, ratio, delta, regime = c("hard", "soft")) {
-  solve_slope(p_nice, ratio, delta, rho = 1, cost = 0, regime = regime)$z_star
+canalized_optimum <- function(f_nice, ratio, delta, regime = c("hard", "soft")) {
+  solve_slope(f_nice, ratio, delta, rho = 1, cost = 0, regime = regime)$z_star
 }
 
 #' Run the  model
-#' @param p_nice frequency of nice environment (0-1)
+#' @param f_nice frequency f of the nice environment (0-1)
 #' @param ratio  harsh/nice maximum fitness (0-1]
 #' @param delta  optimum difference in widths (>0)
 #' @param rho    cue reliability (0.5 = uninformative, 1 = perfect)
@@ -83,11 +84,11 @@ canalized_optimum <- function(p_nice, ratio, delta, regime = c("hard", "soft")) 
 #' @return named list: inputs, z_star (canalized), a_star, b_star, cost_paid,
 #'   b_grid, profile, fitness of plastic (pH, pN, pMean) and canalized
 #'   (cH, cN, cMean) genotypes, relative / absolute gains, verdict.
-run_model <- function(p_nice = 0.7, ratio = 0.4, delta = 2, rho = 0.9,
+run_model <- function(f_nice = 0.7, ratio = 0.4, delta = 2, rho = 0.9,
                           cost = 0.05, regime = c("hard", "soft"),
                           om_h = 1, om_n = 1) {
   regime <- match.arg(regime)
-  sol <- solve_slope(p_nice, ratio, delta, rho, cost, regime, om_h = om_h, om_n = om_n)
+  sol <- solve_slope(f_nice, ratio, delta, rho, cost, regime, om_h = om_h, om_n = om_n)
   a_star <- sol$a_star; b_star <- sol$b_star; z_star <- sol$z_star
 
   pen <- 1 - cost * b_star^2
@@ -96,8 +97,8 @@ run_model <- function(p_nice = 0.7, ratio = 0.4, delta = 2, rho = 0.9,
   pN <- 1 * pen * S$S_nice
   cH <- ratio * gauss_fitness(z_star, 0, om_h)
   cN <- 1 * gauss_fitness(z_star, delta, om_n)
-  pMean <- p_nice * pN + (1 - p_nice) * pH
-  cMean <- p_nice * cN + (1 - p_nice) * cH
+  pMean <- f_nice * pN + (1 - f_nice) * pH
+  cMean <- f_nice * cN + (1 - f_nice) * cH
   relH <- (pH - cH) / cH
   relN <- (pN - cN) / cN
   relMean <- (pMean - cMean) / cMean
@@ -117,7 +118,7 @@ run_model <- function(p_nice = 0.7, ratio = 0.4, delta = 2, rho = 0.9,
     b_star, cost * b_star^2 * 100)
 
   list(
-    inputs = list(p_nice = p_nice, ratio = ratio, delta = delta, rho = rho,
+    inputs = list(f_nice = f_nice, ratio = ratio, delta = delta, rho = rho,
                   cost = cost, regime = regime, om_h = om_h, om_n = om_n),
     z_star = z_star, a_star = a_star, b_star = b_star,
     cost_paid = cost * b_star^2,
@@ -161,8 +162,8 @@ plastic_means <- function(m) {
 }
 
 #' Reaction-norm figure 
-#' Dashed line joins the two optima; blue = evolved plastic genotype's mean
-#' phenotype; orange = canalized phenotype z*.
+#' Dashed line joins the two optima; viridis blue (#3B528B) = evolved plastic
+#' genotype's mean phenotype; viridis green (#5DC863) = canalized phenotype z*.
 plot_reaction_norms <- function(m) {
   D <- m$inputs$delta; pm <- plastic_means(m)
   plot(NA, xlim = c(0.8, 2.2), ylim = c(-1, D + 1), xaxt = "n",
@@ -170,11 +171,11 @@ plot_reaction_norms <- function(m) {
        main = sprintf("Reaction norms (evolved slope b* = %.2f)", m$b_star))
   axis(1, at = c(1, 2), labels = c("Harsh (low fitness)", "Nice (high fitness)"))
   segments(1, 0, 2, D, lty = 2, col = "grey50")
-  segments(1, m$z_star, 2, m$z_star, col = "#E69F00", lwd = 3)
-  segments(1, pm[["harsh"]], 2, pm[["nice"]], col = "#0072B2", lwd = 3)
+  segments(1, m$z_star, 2, m$z_star, col = "#5DC863", lwd = 3)
+  segments(1, pm[["harsh"]], 2, pm[["nice"]], col = "#3B528B", lwd = 3)
   points(c(1, 2), c(0, D), pch = 19, cex = 1.6, col = "grey30")
   text(c(1, 2), c(0, D), "optimum", pos = c(2, 4), col = "grey30", xpd = NA)
-  legend("topleft", bty = "n", lwd = 3, col = c("#0072B2", "#E69F00"),
+  legend("topleft", bty = "n", lwd = 3, col = c("#3B528B", "#5DC863"),
          legend = c("Plastic genotype (mean phenotype)", "Canalized genotype"))
 }
 
@@ -183,9 +184,9 @@ plot_slope_profile <- function(m) {
   # y range with 25% headroom so the b* marker and label never leave the panel
   yr <- range(m$profile); span <- max(diff(yr), 1e-6)
   ylim <- c(yr[1] - 0.05 * span, yr[2] + 0.25 * span)
-  plot(m$b_grid, m$profile, type = "l", lwd = 3, col = "#0072B2", bty = "l",
+  plot(m$b_grid, m$profile, type = "l", lwd = 3, col = "#3B528B", bty = "l",
        ylim = ylim, xlab = "plasticity slope b",
-       ylab = "weighted fitness selection maximises",
+       ylab = "weighted fitness selection maximizes",
        main = sprintf("Fitness vs. plasticity slope (b* = %.2f)", m$b_star))
   abline(v = m$b_star, lty = 2, col = "grey40")
   points(m$b_star, max(m$profile), pch = 19, cex = 1.4)
@@ -198,7 +199,7 @@ plot_fitness <- function(m) {
   mat <- rbind(Plastic = c(m$pH, m$pN, m$pMean),
                Canalized = c(m$cH, m$cN, m$cMean))
   colnames(mat) <- c("Harsh", "Nice", "Population mean")
-  barplot(mat, beside = TRUE, ylim = c(0, 1), col = c("#0072B2", "#E69F00"),
+  barplot(mat, beside = TRUE, ylim = c(0, 1), col = c("#3B528B", "#5DC863"),
           ylab = "Expected fitness", legend.text = rownames(mat),
           args.legend = list(x = "topleft", bty = "n"))
 }
@@ -220,8 +221,8 @@ gg_reaction_norms <- function(m) {
                        hjust = c(1.3, -0.3), colour = "grey30") +
     ggplot2::geom_line(data = lines, ggplot2::aes(env, z, colour = genotype),
                        linewidth = 1.4) +
-    ggplot2::scale_colour_manual(values = c("Plastic genotype (mean phenotype)" = "#0072B2",
-                                            "Canalized genotype" = "#E69F00")) +
+    ggplot2::scale_colour_manual(values = c("Plastic genotype (mean phenotype)" = "#3B528B",
+                                            "Canalized genotype" = "#5DC863")) +
     ggplot2::scale_x_continuous(breaks = c(1, 2), limits = c(0.6, 2.4),
                                 labels = c("Harsh (low fitness)", "Nice (high fitness)")) +
     ggplot2::coord_cartesian(ylim = c(-1, D + 1)) +
@@ -242,7 +243,7 @@ gg_slope_profile <- function(m) {
   right <- m$b_star > 0.6
   lab <- sprintf("b* = %.2f", m$b_star)
   ggplot2::ggplot(d, ggplot2::aes(b, fitness)) +
-    ggplot2::geom_line(colour = "#0072B2", linewidth = 1.4) +
+    ggplot2::geom_line(colour = "#3B528B", linewidth = 1.4) +
     ggplot2::geom_vline(xintercept = m$b_star, linetype = "dashed", colour = "grey40") +
     ggplot2::geom_point(data = data.frame(b = m$b_star, fitness = max(m$profile)),
                         size = 3) +
@@ -270,8 +271,8 @@ gg_fitness <- function(m) {
     ggplot2::geom_col(position = "dodge") +
     ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", fitness)),
                        position = ggplot2::position_dodge(width = 0.9), vjust = -0.4) +
-    ggplot2::scale_fill_manual(values = c("Plastic genotype" = "#0072B2",
-                                          "Best canalized genotype" = "#E69F00")) +
+    ggplot2::scale_fill_manual(values = c("Plastic genotype" = "#3B528B",
+                                          "Best canalized genotype" = "#5DC863")) +
     ggplot2::coord_cartesian(ylim = c(0, 1.05)) +
     ggplot2::labs(x = NULL, y = "Expected fitness", fill = NULL) +
     ggplot2::theme_minimal(base_size = 13) +
@@ -281,12 +282,12 @@ gg_fitness <- function(m) {
 # ---- Example (runs only when this file is executed directly) --------------
 if (sys.nframe() == 0) {
   for (cst in c(0, 0.05, 0.2)) {
-    m <- run_model(p_nice = 0.7, ratio = 0.4, delta = 2, rho = 0.9,
+    m <- run_model(f_nice = 0.7, ratio = 0.4, delta = 2, rho = 0.9,
                        cost = cst, regime = "hard")
     cat(sprintf("cost = %.2f  ->  b* = %.2f, a* = %.3f, canalized z* = %.3f\n",
                 cst, m$b_star, m$a_star, m$z_star))
   }
-  m <- run_model(p_nice = 0.7, ratio = 0.4, delta = 2, rho = 0.9,
+  m <- run_model(f_nice = 0.7, ratio = 0.4, delta = 2, rho = 0.9,
                      cost = 0.05, regime = "hard")
   print(results_table(m), digits = 3)
   print(plasticity_table(m), digits = 3)
