@@ -287,7 +287,7 @@ tab_howitworks <- withMathJax(div(
     "The factor \\((1 - cb^2)\\) is the cost of plasticity. Because the cost rises with \\(b^2\\),",
     "a little plasticity is almost free, but strong plasticity becomes expensive."),
   fig_block("anim_b_sweep.gif", "Fitness landscape in the harsh and the nice environment",
-            HTML(paste("Mean fitness of the plastic genotype peaks at an intermediate slope (b* = 0.58), because plasticity pays in the harsh environment but costs fitness and misfires when the cue is wrong. ©PhenFit"))),
+            HTML(paste("Mean fitness of the plastic genotype peaks at an intermediate slope (b* = 0.58), because plasticity pays in the harsh environment but costs fitness and misfires when the cue is wrong."))),
   h3("Mean fitness"),
   p("$$\\bar{W} = \\sum_e w_e W_e$$"),
   p("Under hard selection, \\(w_e\\) is the environment's frequency \u00d7 its \\(W_{max}\\).",
