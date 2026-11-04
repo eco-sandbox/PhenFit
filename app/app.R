@@ -216,7 +216,7 @@ tab_background <- withMathJax(div(
     "A plant one width away from the optimum (\\(z = \\theta \\pm \\omega\\)) keeps 61% of \\(W_{max}\\).",
     "At half a width it keeps 88%, at two widths 14%, and at three widths only 1% (Via and Lande 1985; Lande 2009)."),
   fig_block("fig_gaussian.png", "Gaussian fitness function",
-            "Gaussian fitness function. Points mark fitness at 0.5, 1, 2 and 3 widths from the optimum. ©PhenFit"),
+            "Gaussian fitness function. Points mark fitness at 0.5, 1, 2 and 3 widths from the optimum."),
 
   h3("Reaction norms"),
   p("A reaction norm describes how a genotype's phenotype changes with its environment.",
@@ -232,7 +232,7 @@ tab_background <- withMathJax(div(
   p("A perfect cue (\\(\\rho = 1\\)) favors tracking the full distance between the optima.",
     "A cue at chance level (\\(\\rho = 0.5\\)) favors no plasticity at all (Tufto 2000; Chevin and Lande 2015)."),
   fig_block("anim_cue_regression.gif", "Cost-free regression slope \\(\\beta\\) for different cue reliabilities",
-            "Cost-free regression slope \\(\\beta\\) for different cue reliabilities \u03c1. Bubble area shows probability. ©PhenFit"),
+            "Cost-free regression slope \\(\\beta\\) for different cue reliabilities \u03c1. Bubble area shows probability."),
 
   h3("Costs and limits of plasticity"),
   p("Being plastic can cost fitness, for example to maintain sensing and regulation.",
@@ -244,7 +244,7 @@ tab_background <- withMathJax(div(
     "Hard selection therefore pulls adaptation toward the nice environment, which is the source-sink logic",
     "(Holt and Gaines 1992; Kawecki 1995; Van Tienderen 1991)."),
   fig_block("Fig_hard_vs_soft_pool.png", "Hard and soft selection",
-            "Hard selection: patches contribute offspring by productivity. Soft selection: each patch contributes a fixed share. ©PhenFit"),
+            "Hard selection: patches contribute offspring by productivity. Soft selection: each patch contributes a fixed share."),
 
   h3("References"),
   div(class = "refs", lapply(background_refs, ref_par))
