@@ -323,16 +323,13 @@ tab_howitworks <- withMathJax(div(
   p("PhenFit is illustrative, not predictive. It models a single trait, two discrete environments, a binary cue,",
     "a quadratic cost and no temporal autocorrelation, with no demography, gene flow, genetic variance or evolutionary dynamics.",
     "It finds the optimal genotype but doesn't track how a population gets there."),
-  
-  h3("Attribution"),
-  p("PhenFit (v1.9 / 10.2026) © 2026 [Michel J] BSD-2 / CC BY 4.0."),
-  
+
 ))
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(phenfit_css)), tags$script(HTML(phenfit_js))),
   titlePanel("PhenFit: Finding the fittest genotype"),
-  p("Simplified model of selection on plastic and canalized genotypes in harsh vs. nice environments (v1.9 / 10.2026)"),
+  p("Simplified model of selection on plastic and canalized genotypes in harsh vs. nice environments"),
   tabsetPanel(
     id = "main_tabs",
     tabPanel(
